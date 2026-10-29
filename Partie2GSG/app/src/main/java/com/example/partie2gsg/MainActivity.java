@@ -64,12 +64,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     .show();
         });
         btnMap.setOnClickListener(v -> {
-
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    MapsFragment.class
+            );
+            startActivity(intent);
         });
     }
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
         double prix_d = i * 10;
         TxtPrix.setText(String.valueOf(prix_d));
     }

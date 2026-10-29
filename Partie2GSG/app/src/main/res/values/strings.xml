@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Partie2GSG</string>
+        <string-array name="pizza">
+            <item>Pepe</item>
+            <item>Fromage</item>
+
+        </string-array>
 </resources>

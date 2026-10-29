@@ -29,7 +29,7 @@ public class SuccursaleDomino {
     }
 
     public void setTel(String tel) {
-        tel = tel;
+        this.tel = tel;
     }
 
     public double getLatitude() {

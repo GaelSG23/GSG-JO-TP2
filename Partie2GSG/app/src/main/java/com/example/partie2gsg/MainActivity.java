@@ -14,11 +14,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.partie2gsg.DataBase.SuccursaleDataSource;
 import com.example.partie2gsg.DataBase.SuccursaleDomino;
+import com.example.partie2gsg.DataBase.SuccursaleImporter;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,21 +35,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //DATABASE
         datasource = new SuccursaleDataSource(this);
+
+        SuccursaleImporter importer =
+                new SuccursaleImporter(this, datasource);
+
+
         datasource.open();
         valeurs = datasource.getAllSuccursales();
+
+        Log.d("Succursales", "Nombre : " + valeurs.size());
+        for (SuccursaleDomino s : valeurs) {
+            Log.d("Succursales", s.getId() + " | " + s.getAddress() + " | " + s.getTel()
+                    + " | " + s.getLatitude() + ", " + s.getLongitude());
+        }
 
         Spinner spinnerPizza = findViewById(R.id.pizza);
         TxtPrix = findViewById(R.id.prix);
         TextView TxtNumCom = findViewById(R.id.num_com);
-        EditText EditNom = findViewById(R.id.nom);
-        EditText EditPrenom = findViewById(R.id.prenom);
         EditAddresses = findViewById(R.id.adresses);
-        EditText EditCodePostal = findViewById(R.id.code_postal);
-        EditText EditVille = findViewById(R.id.ville);
-        EditText EditTel = findViewById(R.id.tel);
-
 
         TxtNumCom.setText(String.valueOf((int)(Math.random() * 101)));
 
@@ -64,16 +69,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinnerPizza.setAdapter(adapter);
         spinnerPizza.setOnItemSelectedListener(this);
 
-
         btnEnvoyer.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MapsFragment.class);
             startActivity(intent);
         });
 
-
         btnEnvoyer.setOnClickListener(v -> {
 
+
             SuccursaleDomino succursale = succursaleCheck();
+            if (succursale == null) {
+                Toast.makeText(this, "Adresse introuvable", Toast.LENGTH_SHORT).show();
+                return;
+            }
             new AlertDialog.Builder(this)
                     .setTitle("Commande Envoyé")
                     .setMessage("Votre commande va être livrée par la succursale " + succursale.getAddress() + "\n Numéro de téléphone de cette succursale " + succursale.getTel())
@@ -106,11 +114,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             return null;
         }
 
+
+
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         try {
             List<Address> addresses =
                     geocoder.getFromLocationName(address, 1);
+
+            if (addresses == null || addresses.isEmpty()) {
+                return null;
+            }
 
             double latitude = addresses.get(0).getLatitude();
             double longitude = addresses.get(0).getLongitude();
@@ -119,6 +133,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             float distanceMin = Float.MAX_VALUE;
 
             for (SuccursaleDomino s : valeurs) {
+
+                if (s.getAddress() == null || s.getAddress().trim().isEmpty() || s.getTel() == null || s.getTel().trim().isEmpty()) {
+                    continue;
+                }
 
                 float[] distance = new float[1];
 

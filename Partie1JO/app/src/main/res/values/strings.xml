@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Partie1JO</string>
+    <string name="message_bienvenue">Bienvenue!</string>
+    <string name="btnSuivant">Suivant</string>
+    <string name="voici_votre_selection">voici votre selection</string>
+    <string name="retour">retour</string>
 </resources>

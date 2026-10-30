@@ -37,19 +37,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         datasource = new SuccursaleDataSource(this);
 
+        //instsancie l'impporter et l'appel
         SuccursaleImporter importer =
                 new SuccursaleImporter(this, datasource);
-
+        importer.importerCSV();
 
         datasource.open();
+        //met toute les donnée de succursale dans une liste
         valeurs = datasource.getAllSuccursales();
 
+        //log les succursales
         Log.d("Succursales", "Nombre : " + valeurs.size());
         for (SuccursaleDomino s : valeurs) {
             Log.d("Succursales", s.getId() + " | " + s.getAddress() + " | " + s.getTel()
                     + " | " + s.getLatitude() + ", " + s.getLongitude());
         }
 
+        //get les elements du layout
         Spinner spinnerPizza = findViewById(R.id.pizza);
         TxtPrix = findViewById(R.id.prix);
         TextView TxtNumCom = findViewById(R.id.num_com);
@@ -60,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Button btnMap = findViewById(R.id.btnMap);
         Button btnEnvoyer = findViewById(R.id.btnEnvoyer);
 
+        //Créer le spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.pizza,
@@ -69,14 +74,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinnerPizza.setAdapter(adapter);
         spinnerPizza.setOnItemSelectedListener(this);
 
+        //Bouton envoyer
         btnEnvoyer.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MapsFragment.class);
-            startActivity(intent);
-        });
-
-        btnEnvoyer.setOnClickListener(v -> {
-
-
             SuccursaleDomino succursale = succursaleCheck();
             if (succursale == null) {
                 Toast.makeText(this, "Adresse introuvable", Toast.LENGTH_SHORT).show();
@@ -89,13 +88,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     .show();
         });
         btnMap.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    MainActivity.this,
-                    MapsFragment.class
-            );
+
+            SuccursaleDomino s = succursaleCheck();
+            if (s == null) {
+                Toast.makeText(this, "Aucune succursale trouvée", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(MainActivity.this, MapsFragment.class);
+            intent.putExtra("succursale", s);
             startActivity(intent);
         });
     }
+
+    //Definie le prix de la pizza
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         double prix_d = i * 10;
@@ -106,16 +111,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
+    //Check qu'elle succursale est la plus proche.
     public SuccursaleDomino succursaleCheck() {
 
         String address = EditAddresses.getText().toString().trim();
-
         if (address.isEmpty() || valeurs == null || valeurs.isEmpty()) {
             return null;
         }
-
-
-
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         try {
@@ -153,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     plusProche = s;
                 }
             }
-
             return plusProche;
 
         } catch (IOException e) {

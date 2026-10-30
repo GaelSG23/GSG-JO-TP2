@@ -28,16 +28,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     + COLUMN_LONGITUDE + " REAL NOT NULL"
                     + ");";
 
-
+    //Renvoie le context de la base de donnée
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //Créer la base de données
     @Override
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE);
     }
 
+    //Methode d'update de la base de données
     @Override
     public void onUpgrade(
             SQLiteDatabase db,

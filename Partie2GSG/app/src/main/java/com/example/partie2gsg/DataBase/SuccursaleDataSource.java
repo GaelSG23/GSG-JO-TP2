@@ -37,11 +37,18 @@ public class SuccursaleDataSource {
         dbHelper.close();
     }
 
+    //Crée la succursale et l'ajoute a la base de données
     public SuccursaleDomino createSuccursale(
             String address,
             String tel,
             double latitude,
             double longitude) {
+
+        // Vérifier si l'adresse existe déjà
+        SuccursaleDomino existante = getSuccursaleByAddress(address);
+        if (existante != null) {
+            return existante; // ou return null; si tu préfères signaler le doublon
+        }
 
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_ADDRESS, address);
@@ -64,15 +71,30 @@ public class SuccursaleDataSource {
                 allColumns,
                 MySQLiteHelper.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(insertId)},
-                null,
-                null,
-                null)) {
+                null, null, null)) {
 
             if (cursor.moveToFirst()) {
                 return cursorToSuccursale(cursor);
             }
         }
 
+        return null;
+    }
+
+    //revoie les succursale par address pour eviter les doublons.
+    public SuccursaleDomino getSuccursaleByAddress(String address) {
+        try (Cursor cursor = database.query(
+                MySQLiteHelper.TABLE_SUCCURSALES,
+                allColumns,
+                MySQLiteHelper.COLUMN_ADDRESS + " = ?",
+                new String[]{address},
+                null, null, null,
+                "1")) {
+
+            if (cursor.moveToFirst()) {
+                return cursorToSuccursale(cursor);
+            }
+        }
         return null;
     }
 

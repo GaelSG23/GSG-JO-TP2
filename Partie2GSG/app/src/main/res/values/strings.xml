@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Partie2GSG</string>
         <string-array name="pizza">
-            <item>Pepe</item>
+            <item>Peppéroni</item>
             <item>Fromage</item>
-
+            <item>Baccon</item>
+            <item>Garnie</item>
+            <item>Végétarienne</item>
         </string-array>
 </resources>

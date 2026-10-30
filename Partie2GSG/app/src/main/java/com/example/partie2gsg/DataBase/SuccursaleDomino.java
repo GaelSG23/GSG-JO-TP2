@@ -1,6 +1,7 @@
 package com.example.partie2gsg.DataBase;
+import java.io.Serializable;
 
-public class SuccursaleDomino {
+public class SuccursaleDomino implements Serializable {
 
     public long id;
     public String address;

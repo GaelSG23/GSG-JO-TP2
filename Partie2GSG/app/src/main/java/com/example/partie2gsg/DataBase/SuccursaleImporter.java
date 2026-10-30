@@ -19,7 +19,7 @@ public class SuccursaleImporter {
         this.context = context;
         this.datasource = datasource;
     }
-
+    //Import la liste de succursale a portir d'un dossier csv
     public void importerCSV() {
         try (InputStream input =
                      context.getAssets().open("dominos.csv");
